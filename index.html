@@ -3,136 +3,103 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Get Help</title>
+<title>Get Help!</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.1.1/tesseract.min.js"></script>
 <style>
   :root {
-    --bg-dark: #0a0e1a;
-    --bg-card: #111828;
-    --accent-blue: #3b82f6;
-    --accent-cyan: #06b6d4;
-    --accent-red: #ef4444;
-    --accent-gold: #fbbf24;
-    --accent-green: #22c55e;
-    --text-primary: #f1f5f9;
-    --text-secondary: #94a3b8;
-    --text-muted: #64748b;
-    --border: rgba(59,130,246,0.15);
+    --bg-dark:#0a0e1a;--bg-card:#111828;--accent-blue:#3b82f6;--accent-cyan:#06b6d4;
+    --accent-red:#ef4444;--accent-gold:#fbbf24;--accent-green:#22c55e;
+    --text-primary:#f1f5f9;--text-secondary:#94a3b8;--text-muted:#64748b;
+    --border:rgba(59,130,246,0.15);
   }
-  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  body {
-    font-family:'Rajdhani',sans-serif; background:var(--bg-dark); color:var(--text-primary);
-    min-height:100dvh; overflow-x:hidden;
-    background-image: radial-gradient(ellipse at 20% 0%,rgba(59,130,246,0.08) 0%,transparent 60%),
-      radial-gradient(ellipse at 80% 100%,rgba(6,182,212,0.06) 0%,transparent 60%);
-  }
-  .header {
-    padding:16px 20px 12px; display:flex; align-items:center; gap:12px;
-    border-bottom:1px solid var(--border); position:sticky; top:0;
-    background:rgba(10,14,26,0.92); backdrop-filter:blur(16px); z-index:100;
-  }
-  .logo { font-family:'Orbitron',sans-serif; font-size:20px; font-weight:800;
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{font-family:'Rajdhani',sans-serif;background:var(--bg-dark);color:var(--text-primary);min-height:100dvh;
+    background-image:radial-gradient(ellipse at 20% 0%,rgba(59,130,246,0.08) 0%,transparent 60%),
+    radial-gradient(ellipse at 80% 100%,rgba(6,182,212,0.06) 0%,transparent 60%)}
+  .header{padding:16px 20px 12px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);
+    position:sticky;top:0;background:rgba(10,14,26,0.92);backdrop-filter:blur(16px);z-index:100}
+  .logo{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:800;
     background:linear-gradient(135deg,var(--accent-blue),var(--accent-cyan));
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent; letter-spacing:1px; }
-  .logo-sub { font-size:11px; color:var(--text-muted); letter-spacing:2px; text-transform:uppercase; font-weight:500; }
-  .season-select {
-    margin-left:auto; background:rgba(59,130,246,0.12); border:1px solid rgba(59,130,246,0.25);
-    border-radius:6px; padding:4px 8px; color:var(--accent-cyan); font-family:'Orbitron',sans-serif;
-    font-size:11px; font-weight:600; letter-spacing:1px; cursor:pointer; outline:none;
-  }
-  .season-select option { background:var(--bg-dark); color:var(--text-primary); }
-  .main { padding:16px; max-width:480px; margin:0 auto; }
-
-  .capture-btn {
-    width:100%; padding:18px; border:2px dashed rgba(59,130,246,0.3); border-radius:14px;
-    background:rgba(59,130,246,0.05); color:var(--text-primary); font-family:'Rajdhani',sans-serif;
-    font-size:17px; font-weight:600; cursor:pointer; display:flex; align-items:center;
-    justify-content:center; gap:10px; transition:all 0.2s;
-  }
-  .capture-btn:active { background:rgba(59,130,246,0.12); border-color:var(--accent-blue); transform:scale(0.98); }
-  .capture-btn svg { width:24px; height:24px; stroke:var(--accent-cyan); fill:none; }
-
-  .preview-container { position:relative; margin-top:12px; border-radius:12px; overflow:hidden; border:1px solid var(--border); display:none; }
-  .preview-container.active { display:block; }
-  .preview-container img { width:100%; display:block; }
-  .preview-overlay {
-    position:absolute; bottom:0; left:0; right:0; padding:10px 14px;
-    background:linear-gradient(transparent,rgba(0,0,0,0.85)); display:flex; align-items:center; justify-content:space-between;
-  }
-  .preview-label { font-size:13px; color:var(--text-secondary); }
-  .retake-btn { background:rgba(255,255,255,0.12); border:none; color:white; font-family:'Rajdhani',sans-serif; font-size:13px; font-weight:600; padding:5px 12px; border-radius:6px; cursor:pointer; }
-
-  .ocr-status { display:none; margin-top:14px; padding:16px; background:var(--bg-card); border:1px solid var(--border); border-radius:12px; text-align:center; }
-  .ocr-status.active { display:block; }
-  .ocr-status p { font-size:15px; color:var(--text-secondary); font-weight:500; margin-bottom:10px; }
-  .progress-bar { width:100%; height:6px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden; }
-  .progress-fill { height:100%; width:0%; background:linear-gradient(90deg,var(--accent-blue),var(--accent-cyan)); border-radius:3px; transition:width 0.3s; }
-  .ocr-pct { font-family:'Orbitron',sans-serif; font-size:12px; color:var(--accent-cyan); margin-top:6px; }
-
-  .manual-section { margin-top:14px; }
-  .manual-toggle { width:100%; background:none; border:none; color:var(--text-muted); font-family:'Rajdhani',sans-serif; font-size:14px; font-weight:500; padding:8px; cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
-  .manual-input-area { display:none; margin-top:10px; }
-  .manual-input-area.active { display:block; }
-  .input-row { display:flex; gap:8px; }
-  .name-input { flex:1; background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:10px 14px; color:var(--text-primary); font-family:'Rajdhani',sans-serif; font-size:16px; font-weight:500; outline:none; }
-  .name-input:focus { border-color:var(--accent-blue); }
-  .name-input::placeholder { color:var(--text-muted); }
-  .add-btn { background:var(--accent-blue); border:none; border-radius:8px; padding:10px 16px; color:white; font-family:'Rajdhani',sans-serif; font-size:15px; font-weight:700; cursor:pointer; white-space:nowrap; }
-
-  .players-section { display:none; margin-top:20px; }
-  .players-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; padding:0 2px; }
-  .players-title { font-family:'Orbitron',sans-serif; font-size:13px; font-weight:600; color:var(--text-secondary); letter-spacing:2px; text-transform:uppercase; }
-  .clear-all { background:none; border:none; color:var(--accent-red); font-family:'Rajdhani',sans-serif; font-size:13px; font-weight:600; cursor:pointer; padding:4px 8px; }
-  .player-list { display:flex; flex-direction:column; gap:8px; }
-
-  .player-card {
-    background:var(--bg-card); border:1px solid var(--border); border-radius:12px;
-    padding:12px 14px; display:flex; align-items:center; gap:12px;
-    position:relative; overflow:hidden; animation:slideUp 0.25s ease-out both;
-  }
-  .player-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:linear-gradient(180deg,var(--accent-blue),var(--accent-cyan)); }
-  .player-card.uncertain::before { background:linear-gradient(180deg,var(--accent-gold),var(--accent-gold)); }
-  .player-index { font-family:'Orbitron',sans-serif; font-size:11px; font-weight:700; color:var(--text-muted); width:18px; text-align:center; flex-shrink:0; }
-  .player-info { flex:1; min-width:0; }
-  .player-name-row { display:flex; align-items:center; gap:8px; }
-  .player-name { font-size:18px; font-weight:700; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .confidence-tag { flex-shrink:0; font-size:10px; font-weight:700; font-family:'Orbitron',sans-serif; padding:2px 6px; border-radius:4px; }
-  .confidence-tag.high { background:rgba(34,197,94,0.12); color:var(--accent-green); }
-  .confidence-tag.med { background:rgba(251,191,36,0.12); color:var(--accent-gold); }
-  .confidence-tag.low { background:rgba(239,68,68,0.12); color:var(--accent-red); }
-  .player-meta { font-size:12px; color:var(--text-muted); margin-top:1px; }
-  .player-name-edit { font-size:18px; font-weight:700; color:var(--text-primary); font-family:'Rajdhani',sans-serif; background:rgba(255,255,255,0.06); border:1px solid var(--accent-blue); border-radius:6px; padding:2px 8px; outline:none; width:100%; }
-  .player-actions { display:flex; align-items:center; gap:6px; flex-shrink:0; }
-  .player-btn { width:32px; height:32px; border:none; border-radius:6px; display:flex; align-items:center; justify-content:center; cursor:pointer; }
-  .player-btn svg { width:15px; height:15px; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-  .btn-edit { background:rgba(59,130,246,0.1); } .btn-edit svg { stroke:var(--accent-blue); }
-  .btn-remove { background:rgba(239,68,68,0.1); } .btn-remove svg { stroke:var(--accent-red); }
-  .btn-open { background:rgba(6,182,212,0.1); text-decoration:none; display:flex; } .btn-open svg { stroke:var(--accent-cyan); }
-
-  .lookup-all-btn { width:100%; margin-top:16px; padding:14px; border:none; border-radius:12px; background:linear-gradient(135deg,var(--accent-blue),var(--accent-cyan)); color:white; font-family:'Orbitron',sans-serif; font-size:14px; font-weight:700; letter-spacing:1.5px; cursor:pointer; display:none; }
-  .lookup-all-btn.visible { display:block; }
-  .lookup-all-btn:active { opacity:0.85; transform:scale(0.98); }
-
-  .empty-state { text-align:center; padding:40px 20px; color:var(--text-muted); }
-  .empty-state svg { width:48px; height:48px; stroke:var(--text-muted); fill:none; opacity:0.4; margin-bottom:12px; }
-  .empty-state p { font-size:15px; font-weight:500; line-height:1.5; }
-
-  .info-bar { margin-top:24px; padding:12px 16px; background:rgba(251,191,36,0.06); border:1px solid rgba(251,191,36,0.15); border-radius:10px; font-size:13px; color:var(--text-secondary); line-height:1.5; }
-  .info-bar strong { color:var(--accent-gold); }
-
-  .debug-strip { margin-top:12px; border:1px solid var(--border); border-radius:8px; overflow:hidden; display:none; }
-  .debug-strip.active { display:block; }
-  .debug-strip img { width:100%; display:block; }
-  .debug-label { font-size:11px; color:var(--text-muted); padding:4px 8px; background:var(--bg-card); }
-
-  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--bg-card); border:1px solid var(--border); padding:10px 20px; border-radius:10px; font-size:14px; font-weight:600; color:var(--text-primary); transition:transform 0.3s ease; z-index:200; white-space:nowrap; }
-  .toast.visible { transform:translateX(-50%) translateY(0); }
-
-  @keyframes slideUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
-  .player-card:nth-child(1){animation-delay:.03s} .player-card:nth-child(2){animation-delay:.06s}
-  .player-card:nth-child(3){animation-delay:.09s} .player-card:nth-child(4){animation-delay:.12s}
-  .player-card:nth-child(5){animation-delay:.15s} .player-card:nth-child(6){animation-delay:.18s}
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px}
+  .season-select{margin-left:auto;background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.25);
+    border-radius:6px;padding:4px 8px;color:var(--accent-cyan);font-family:'Orbitron',sans-serif;
+    font-size:11px;font-weight:600;letter-spacing:1px;cursor:pointer;outline:none}
+  .season-select option{background:var(--bg-dark);color:var(--text-primary)}
+  .main{padding:16px;max-width:480px;margin:0 auto}
+  .capture-btn{width:100%;padding:18px;border:2px dashed rgba(59,130,246,0.3);border-radius:14px;
+    background:rgba(59,130,246,0.05);color:var(--text-primary);font-family:'Rajdhani',sans-serif;
+    font-size:17px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px}
+  .capture-btn:active{background:rgba(59,130,246,0.12);border-color:var(--accent-blue);transform:scale(0.98)}
+  .capture-btn svg{width:24px;height:24px;stroke:var(--accent-cyan);fill:none}
+  .preview-container{position:relative;margin-top:12px;border-radius:12px;overflow:hidden;border:1px solid var(--border);display:none}
+  .preview-container.active{display:block}
+  .preview-container img{width:100%;display:block}
+  .preview-overlay{position:absolute;bottom:0;left:0;right:0;padding:10px 14px;
+    background:linear-gradient(transparent,rgba(0,0,0,0.85));display:flex;align-items:center;justify-content:space-between}
+  .preview-label{font-size:13px;color:var(--text-secondary)}
+  .retake-btn{background:rgba(255,255,255,0.12);border:none;color:white;font-family:'Rajdhani',sans-serif;
+    font-size:13px;font-weight:600;padding:5px 12px;border-radius:6px;cursor:pointer}
+  .ocr-status{display:none;margin-top:14px;padding:16px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;text-align:center}
+  .ocr-status.active{display:block}
+  .ocr-status p{font-size:15px;color:var(--text-secondary);font-weight:500;margin-bottom:10px}
+  .progress-bar{width:100%;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden}
+  .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--accent-blue),var(--accent-cyan));border-radius:3px;transition:width 0.3s}
+  .ocr-pct{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--accent-cyan);margin-top:6px}
+  .debug-log{margin-top:10px;padding:8px 12px;background:rgba(0,0,0,0.3);border-radius:8px;font-size:11px;
+    color:var(--text-muted);font-family:monospace;max-height:120px;overflow-y:auto;display:none;white-space:pre-wrap}
+  .debug-log.active{display:block}
+  .manual-section{margin-top:14px}
+  .manual-toggle{width:100%;background:none;border:none;color:var(--text-muted);font-family:'Rajdhani',sans-serif;
+    font-size:14px;font-weight:500;padding:8px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+  .manual-input-area{display:none;margin-top:10px}
+  .manual-input-area.active{display:block}
+  .input-row{display:flex;gap:8px}
+  .name-input{flex:1;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;
+    color:var(--text-primary);font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:500;outline:none}
+  .name-input:focus{border-color:var(--accent-blue)}
+  .name-input::placeholder{color:var(--text-muted)}
+  .add-btn{background:var(--accent-blue);border:none;border-radius:8px;padding:10px 16px;color:white;
+    font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;cursor:pointer;white-space:nowrap}
+  .players-section{display:none;margin-top:20px}
+  .players-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:0 2px}
+  .players-title{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:600;color:var(--text-secondary);letter-spacing:2px;text-transform:uppercase}
+  .clear-all{background:none;border:none;color:var(--accent-red);font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;cursor:pointer;padding:4px 8px}
+  .player-list{display:flex;flex-direction:column;gap:8px}
+  .player-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;
+    display:flex;align-items:center;gap:12px;position:relative;overflow:hidden;animation:slideUp 0.25s ease-out both}
+  .player-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--accent-blue),var(--accent-cyan))}
+  .player-index{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;color:var(--text-muted);width:18px;text-align:center;flex-shrink:0}
+  .player-info{flex:1;min-width:0}
+  .player-name{font-size:18px;font-weight:700;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .player-meta{font-size:12px;color:var(--text-muted);margin-top:1px}
+  .player-name-edit{font-size:18px;font-weight:700;color:var(--text-primary);font-family:'Rajdhani',sans-serif;
+    background:rgba(255,255,255,0.06);border:1px solid var(--accent-blue);border-radius:6px;padding:2px 8px;outline:none;width:100%}
+  .player-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
+  .player-btn{width:32px;height:32px;border:none;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .player-btn svg{width:15px;height:15px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .btn-edit{background:rgba(59,130,246,0.1)} .btn-edit svg{stroke:var(--accent-blue)}
+  .btn-remove{background:rgba(239,68,68,0.1)} .btn-remove svg{stroke:var(--accent-red)}
+  .btn-open{background:rgba(6,182,212,0.1);text-decoration:none;display:flex} .btn-open svg{stroke:var(--accent-cyan)}
+  .lookup-all-btn{width:100%;margin-top:16px;padding:14px;border:none;border-radius:12px;
+    background:linear-gradient(135deg,var(--accent-blue),var(--accent-cyan));color:white;
+    font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;letter-spacing:1.5px;cursor:pointer;display:none}
+  .lookup-all-btn.visible{display:block}
+  .lookup-all-btn:active{opacity:0.85;transform:scale(0.98)}
+  .empty-state{text-align:center;padding:40px 20px;color:var(--text-muted)}
+  .empty-state svg{width:48px;height:48px;stroke:var(--text-muted);fill:none;opacity:0.4;margin-bottom:12px}
+  .empty-state p{font-size:15px;font-weight:500;line-height:1.5}
+  .info-bar{margin-top:24px;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.15);
+    border-radius:10px;font-size:13px;color:var(--text-secondary);line-height:1.5}
+  .info-bar strong{color:var(--accent-gold)}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg-card);
+    border:1px solid var(--border);padding:10px 20px;border-radius:10px;font-size:14px;font-weight:600;
+    color:var(--text-primary);transition:transform 0.3s ease;z-index:200;white-space:nowrap}
+  .toast.visible{transform:translateX(-50%) translateY(0)}
+  @keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  .player-card:nth-child(1){animation-delay:.03s}.player-card:nth-child(2){animation-delay:.06s}
+  .player-card:nth-child(3){animation-delay:.09s}.player-card:nth-child(4){animation-delay:.12s}
+  .player-card:nth-child(5){animation-delay:.15s}.player-card:nth-child(6){animation-delay:.18s}
 </style>
 </head>
 <body>
@@ -148,10 +115,9 @@
     <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
     </svg>
-    Upload Screenshot
+    Snap Enemy Team
   </label>
-  <input type="file" id="cameraInput" accept="image/*" style="display:none">
-
+  <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none">
   <div class="preview-container" id="previewContainer">
     <img id="previewImg" src="" alt="Screenshot">
     <div class="preview-overlay">
@@ -159,15 +125,12 @@
       <button class="retake-btn" onclick="document.getElementById('cameraInput').click()">Retake</button>
     </div>
   </div>
-
   <div class="ocr-status" id="ocrStatus">
-    <p id="ocrMsg">Preprocessing...</p>
+    <p id="ocrMsg">Processing...</p>
     <div class="progress-bar"><div class="progress-fill" id="ocrProgress"></div></div>
     <div class="ocr-pct" id="ocrPct">0%</div>
   </div>
-
-  <div id="debugArea"></div>
-
+  <div class="debug-log" id="debugLog"></div>
   <div class="manual-section">
     <button class="manual-toggle" id="manualToggle">+ Add player name manually</button>
     <div class="manual-input-area" id="manualArea">
@@ -177,7 +140,6 @@
       </div>
     </div>
   </div>
-
   <div class="players-section" id="playersSection">
     <div class="players-header">
       <span class="players-title">Players</span>
@@ -186,21 +148,18 @@
     <div class="player-list" id="playerList"></div>
     <button class="lookup-all-btn" id="lookupAllBtn">OPEN ALL IN TRACKER.GG</button>
   </div>
-
   <div class="empty-state" id="emptyState">
     <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
       <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
     </svg>
-    <p>Upload a screenshot of your<br>match lobby to detect players</p>
+    <p>Snap a photo of the enemy team<br>on the loading screen</p>
   </div>
-
   <div class="info-bar">
     <strong>Tip:</strong> Snap a photo of your TV showing the enemy team on loading screen. The closer and straighter the better.
   </div>
 </div>
 <div class="toast" id="toast"></div>
-
 <script>
 const TRACKER_BASE = 'https://tracker.gg/marvel-rivals/profile/ign/';
 let players = [];
@@ -208,229 +167,32 @@ let currentSeason = '13';
 let editingIndex = -1;
 const $ = id => document.getElementById(id);
 
-$('seasonSelect').addEventListener('change', e => { currentSeason = e.target.value; renderPlayers(); showToast('Season ' + currentSeason); });
+// Debug logger
+function dbg(msg) {
+  console.log(msg);
+  const el = $('debugLog');
+  el.textContent += msg + '\n';
+  el.classList.add('active');
+  el.scrollTop = el.scrollHeight;
+}
+
+$('seasonSelect').addEventListener('change', e => { currentSeason = e.target.value; renderPlayers(); });
+
 $('cameraInput').addEventListener('change', async e => {
   const file = e.target.files[0];
   if (!file) return;
+  $('debugLog').textContent = '';
+  $('debugLog').classList.remove('active');
   const reader = new FileReader();
   reader.onload = async ev => {
     $('previewImg').src = ev.target.result;
     $('previewContainer').classList.add('active');
-    $('previewLabel').textContent = 'Scanning...';
+    $('previewLabel').textContent = 'Processing...';
     $('emptyState').style.display = 'none';
     await processImage(ev.target.result);
   };
   reader.readAsDataURL(file);
 });
-
-// =============================================
-// IMAGE PREPROCESSING & NAME BAR DETECTION
-// =============================================
-
-function loadImage(src) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-    img.src = src;
-  });
-}
-
-function getImageData(img) {
-  const c = document.createElement('canvas');
-  c.width = img.width;
-  c.height = img.height;
-  const ctx = c.getContext('2d');
-  ctx.drawImage(img, 0, 0);
-  return { canvas: c, ctx, data: ctx.getImageData(0, 0, c.width, c.height) };
-}
-
-function getBrightness(data, w, h) {
-  const b = new Float32Array(w * h);
-  for (let i = 0; i < w * h; i++) {
-    const off = i * 4;
-    b[i] = 0.299 * data[off] + 0.587 * data[off+1] + 0.114 * data[off+2];
-  }
-  return b;
-}
-
-function percentile(arr, p) {
-  const sorted = Float32Array.from(arr).sort();
-  const idx = Math.floor(sorted.length * p / 100);
-  return sorted[idx];
-}
-
-function findNameBars(brightness, w, h) {
-  const x1 = Math.floor(w * 0.08);
-  const x2 = Math.floor(w * 0.55);
-  const regionW = x2 - x1;
-
-  // Sample pixels to find adaptive bright threshold (avoid huge array on phone)
-  const sampleStep = Math.max(1, Math.floor(h / 200));
-  const samples = [];
-  for (let y = 0; y < h; y += sampleStep) {
-    for (let x = x1; x < x2; x += 2) {
-      samples.push(brightness[y * w + x]);
-    }
-  }
-  samples.sort((a, b) => a - b);
-  const brightThresh = samples[Math.floor(samples.length * 0.85)];
-
-  // Scan each row for name-bar characteristics
-  const minSpread = w * 0.05;
-  const textRows = [];
-
-  for (let y = 0; y < h; y++) {
-    let darkCount = 0, brightCount = 0;
-    let minBX = w, maxBX = 0;
-    for (let x = x1; x < x2; x++) {
-      const v = brightness[y * w + x];
-      if (v < 80) darkCount++;
-      if (v > brightThresh) {
-        brightCount++;
-        if (x < minBX) minBX = x;
-        if (x > maxBX) maxBX = x;
-      }
-    }
-    const darkPct = darkCount / regionW;
-    const spread = maxBX > minBX ? maxBX - minBX : 0;
-
-    if (darkPct > 0.60 && brightCount >= 8 && brightCount < 150 && spread > minSpread) {
-      textRows.push({ y, darkPct, bright: brightCount });
-    }
-  }
-
-  if (textRows.length === 0) return [];
-
-  // Group consecutive rows into bands (gap > 5 rows = new band)
-  const rawBands = [];
-  let bStart = textRows[0].y, bPrev = textRows[0].y;
-  for (let i = 1; i < textRows.length; i++) {
-    if (textRows[i].y - bPrev > 5) {
-      rawBands.push([bStart, bPrev]);
-      bStart = textRows[i].y;
-    }
-    bPrev = textRows[i].y;
-  }
-  rawBands.push([bStart, bPrev]);
-
-  // Build a quick lookup for row darkPct and bright count
-  const rowDark = new Float32Array(h);
-  const rowBright = new Uint16Array(h);
-  for (const r of textRows) {
-    rowDark[r.y] = r.darkPct;
-    rowBright[r.y] = r.bright;
-  }
-
-  // For each band, narrow to the darkest core sub-region
-  const nameBars = [];
-  for (const [bandS, bandE] of rawBands) {
-    if (bandE - bandS < 2) continue;
-
-    // Find core: rows with darkPct > 0.70 and bright >= 5
-    let coreStart = -1, bestStart = bandS, bestEnd = bandE;
-    for (let y = bandS; y <= bandE; y++) {
-      if (rowDark[y] > 0.70 && rowBright[y] >= 5) {
-        if (coreStart === -1) coreStart = y;
-      } else {
-        if (coreStart !== -1 && y - coreStart >= 3) {
-          bestStart = coreStart;
-          bestEnd = y - 1;
-        }
-        coreStart = -1;
-      }
-    }
-    if (coreStart !== -1 && bandE - coreStart >= 3) {
-      bestStart = coreStart;
-      bestEnd = bandE;
-    }
-
-    const py1 = Math.max(0, bestStart - 3);
-    const py2 = Math.min(h - 1, bestEnd + 3);
-    const fh = py2 - py1 + 1;
-
-    if (fh >= h * 0.006 && fh <= h * 0.06) {
-      nameBars.push({ y1: py1, y2: py2, x1: Math.floor(w * 0.05), x2: Math.floor(w * 0.55) });
-    }
-  }
-
-  // Deduplicate overlapping
-  const merged = [];
-  for (const bar of nameBars) {
-    if (merged.length === 0 || bar.y1 > merged[merged.length - 1].y2 + 10) {
-      merged.push(bar);
-    }
-  }
-
-  return merged.slice(0, 12);
-}
-
-function preprocessFullImage(img) {
-  const scale = 3;
-  const c = document.createElement('canvas');
-  c.width = img.width * scale;
-  c.height = img.height * scale;
-  const ctx = c.getContext('2d');
-  ctx.drawImage(img, 0, 0, c.width, c.height);
-
-  const imgData = ctx.getImageData(0, 0, c.width, c.height);
-  const d = imgData.data;
-  const gray = new Float32Array(c.width * c.height);
-  for (let i = 0; i < gray.length; i++) {
-    gray[i] = 0.299 * d[i*4] + 0.587 * d[i*4+1] + 0.114 * d[i*4+2];
-  }
-
-  // Adaptive threshold
-  const sorted = Float32Array.from(gray).sort();
-  const thresh = sorted[Math.floor(sorted.length * 0.82)];
-
-  // Binarize: bright text -> black on white
-  for (let i = 0; i < gray.length; i++) {
-    const val = gray[i] > thresh ? 0 : 255;
-    d[i*4] = val; d[i*4+1] = val; d[i*4+2] = val; d[i*4+3] = 255;
-  }
-  ctx.putImageData(imgData, 0, 0);
-  return c;
-}
-
-function extractNameStrip(img, region) {
-  const { y1, y2, x1, x2 } = region;
-  const cw = x2 - x1;
-  const ch = y2 - y1 + 1;
-  const scale = 6;
-
-  const c = document.createElement('canvas');
-  c.width = cw * scale;
-  c.height = ch * scale;
-  const ctx = c.getContext('2d');
-
-  // Draw cropped region scaled up
-  ctx.drawImage(img, x1, y1, cw, ch, 0, 0, cw * scale, ch * scale);
-
-  // Get pixel data
-  const imgData = ctx.getImageData(0, 0, c.width, c.height);
-  const d = imgData.data;
-
-  // Convert to grayscale and find adaptive threshold
-  const gray = new Float32Array(c.width * c.height);
-  for (let i = 0; i < gray.length; i++) {
-    gray[i] = 0.299 * d[i*4] + 0.587 * d[i*4+1] + 0.114 * d[i*4+2];
-  }
-  const thresh = percentile(gray, 80);
-
-  // Binarize: text (bright) becomes BLACK on WHITE background (Tesseract prefers this)
-  for (let i = 0; i < gray.length; i++) {
-    const val = gray[i] > thresh ? 0 : 255;
-    d[i*4] = val; d[i*4+1] = val; d[i*4+2] = val; d[i*4+3] = 255;
-  }
-  ctx.putImageData(imgData, 0, 0);
-
-  return c;
-}
-
-// =============================================
-// MAIN PROCESSING PIPELINE
-// =============================================
 
 async function processImage(imageSrc) {
   const status = $('ocrStatus');
@@ -439,184 +201,174 @@ async function processImage(imageSrc) {
   const pct = $('ocrPct');
 
   status.classList.add('active');
-  msg.textContent = 'Analyzing image layout...';
+  msg.textContent = 'Preprocessing image...';
   prog.style.width = '5%';
   pct.textContent = '5%';
 
   try {
-    const img = await loadImage(imageSrc);
-    const { data: imgData } = getImageData(img);
-    const w = img.width, h = img.height;
+    // Load image
+    const img = await new Promise((res, rej) => {
+      const i = new Image();
+      i.onload = () => res(i);
+      i.onerror = rej;
+      i.src = imageSrc;
+    });
 
-    // Step 1: Find name bars
-    msg.textContent = 'Finding player name bars...';
+    dbg('Image loaded: ' + img.width + 'x' + img.height);
+
+    // Crop left 50% of image (where names are)
+    const cropW = Math.floor(img.width * 0.5);
+    const cropH = img.height;
+    const scale = 4;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = cropW * scale;
+    canvas.height = cropH * scale;
+    const ctx = canvas.getContext('2d');
+
+    // Draw left half scaled up
+    ctx.drawImage(img, 0, 0, cropW, cropH, 0, 0, cropW * scale, cropH * scale);
+
+    // Increase contrast via pixel manipulation
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const d = imgData.data;
+    const totalPx = canvas.width * canvas.height;
+
+    // Compute grayscale and find threshold
+    const gray = new Uint8Array(totalPx);
+    for (let i = 0; i < totalPx; i++) {
+      gray[i] = Math.round(0.299 * d[i*4] + 0.587 * d[i*4+1] + 0.114 * d[i*4+2]);
+    }
+
+    // Sort a sample to find threshold (avoid sorting millions of values)
+    const sampleSize = Math.min(50000, totalPx);
+    const step = Math.max(1, Math.floor(totalPx / sampleSize));
+    const samples = [];
+    for (let i = 0; i < totalPx; i += step) {
+      samples.push(gray[i]);
+    }
+    samples.sort((a, b) => a - b);
+    const thresh = samples[Math.floor(samples.length * 0.82)];
+
+    dbg('Threshold: ' + thresh + ' (from ' + samples.length + ' samples)');
+
+    // Binarize: bright text -> black on white (Tesseract prefers dark text on light bg)
+    for (let i = 0; i < totalPx; i++) {
+      const val = gray[i] > thresh ? 0 : 255;
+      d[i*4] = val; d[i*4+1] = val; d[i*4+2] = val; d[i*4+3] = 255;
+    }
+    ctx.putImageData(imgData, 0, 0);
+
+    msg.textContent = 'Reading text (this takes ~15-30s)...';
     prog.style.width = '10%';
     pct.textContent = '10%';
 
-    const brightness = getBrightness(imgData.data, w, h);
-    let nameBars = [];
-    try {
-      nameBars = findNameBars(brightness, w, h);
-      console.log('Name bars found:', nameBars.length, nameBars);
-    } catch(e) {
-      console.error('findNameBars error:', e);
-    }
+    dbg('Starting Tesseract OCR...');
 
-    if (nameBars.length === 0) {
-      // Fallback: OCR the whole image with preprocessing
-      msg.textContent = 'Trying full-image scan...';
-      prog.style.width = '15%';
-      pct.textContent = '15%';
-
-      const fullStrip = preprocessFullImage(img);
-      const result = await Tesseract.recognize(fullStrip, 'eng', {
-        logger: m => {
-          if (m.status === 'recognizing text') {
-            const p = Math.round(15 + m.progress * 80);
-            prog.style.width = p + '%';
-            pct.textContent = p + '%';
-          }
-        }
-      });
-
-      prog.style.width = '100%';
-      pct.textContent = '100%';
-
-      const lines = (result.data.text || '').split('\n');
-      const allNames = [];
-      for (const line of lines) {
-        const name = extractNameFromText(line.trim());
-        if (name) {
-          allNames.push({ name, confidence: 'med', raw: line.trim() });
+    // OCR the preprocessed image
+    const result = await Tesseract.recognize(canvas, 'eng', {
+      logger: m => {
+        if (m.status === 'recognizing text') {
+          const p = Math.round(10 + m.progress * 85);
+          prog.style.width = p + '%';
+          pct.textContent = p + '%';
+        } else if (m.status) {
+          msg.textContent = m.status + '...';
         }
       }
-
-      setTimeout(() => {
-        status.classList.remove('active');
-        $('previewLabel').textContent = 'Screenshot captured';
-        if (allNames.length > 0) {
-          const seen = new Set();
-          players = allNames.filter(p => {
-            const key = p.name.toLowerCase();
-            if (seen.has(key)) return false;
-            seen.add(key);
-            return true;
-          });
-          renderPlayers();
-          showToast(players.length + ' player(s) detected');
-        } else {
-          showToast('No names found -- try manual entry');
-        }
-        $('manualArea').classList.add('active');
-        $('manualToggle').textContent = '+ Add missed players';
-        $('nameInput').focus();
-      }, 300);
-      return;
-    }
-
-    msg.textContent = `Found ${nameBars.length} name bars, reading text...`;
-    prog.style.width = '15%';
-    pct.textContent = '15%';
-
-    // Step 2: Extract and OCR each name bar
-    const allNames = [];
-
-    for (let i = 0; i < nameBars.length; i++) {
-      const strip = extractNameStrip(img, nameBars[i]);
-      const progressBase = 15 + (i / nameBars.length) * 75;
-
-      msg.textContent = `Reading bar ${i+1}/${nameBars.length}...`;
-
-      const result = await Tesseract.recognize(strip, 'eng', {
-        logger: m => {
-          if (m.status === 'recognizing text') {
-            const p = Math.round(progressBase + m.progress * (75 / nameBars.length));
-            prog.style.width = p + '%';
-            pct.textContent = p + '%';
-          }
-        }
-      });
-
-      const text = (result.data.text || '').trim();
-      if (text) {
-        const name = extractNameFromText(text);
-        if (name) {
-          const conf = result.data.confidence || 0;
-          allNames.push({
-            name,
-            confidence: conf > 75 ? 'high' : conf > 55 ? 'med' : 'low',
-            raw: text
-          });
-        }
-      }
-    }
+    });
 
     prog.style.width = '100%';
     pct.textContent = '100%';
+    msg.textContent = 'Extracting names...';
+
+    const rawText = result.data.text || '';
+    dbg('OCR complete. Raw text:\n' + rawText);
+
+    // Parse names from OCR output
+    const names = parseNames(rawText);
+    dbg('Parsed names: ' + JSON.stringify(names));
 
     setTimeout(() => {
       status.classList.remove('active');
       $('previewLabel').textContent = 'Screenshot captured';
-
-      if (allNames.length > 0) {
-        // Deduplicate
+      if (names.length > 0) {
         const seen = new Set();
-        players = allNames.filter(p => {
-          const key = p.name.toLowerCase();
+        players = names.filter(n => {
+          const key = n.name.toLowerCase();
           if (seen.has(key)) return false;
           seen.add(key);
           return true;
         });
         renderPlayers();
         showToast(players.length + ' player(s) detected');
-        $('manualArea').classList.add('active');
-        $('manualToggle').textContent = '+ Add missed players';
       } else {
-        showToast('No names read -- try manual entry');
-        $('manualArea').classList.add('active');
-        $('nameInput').focus();
+        showToast('No names found -- add manually');
       }
+      $('manualArea').classList.add('active');
+      $('manualToggle').textContent = '+ Add missed players';
     }, 300);
 
   } catch (err) {
-    console.error('Processing error:', err);
+    dbg('ERROR: ' + err.message + '\n' + err.stack);
     status.classList.remove('active');
-    showToast('Error -- use manual entry');
+    showToast('Error -- try manual entry');
     $('manualArea').classList.add('active');
     $('nameInput').focus();
   }
 }
 
-function extractNameFromText(text) {
-  let cleaned = text
-    .replace(/\n/g, ' ')
-    .replace(/[|\[\]{}\\`~]/g, '')
-    .trim();
-
-  // Step 1: strip the level number (1-3 digits at the start)
-  const numMatch = cleaned.match(/^\s*\d{1,3}\s+(.*)/);
-  if (numMatch) {
-    cleaned = numMatch[1];
-  }
-
-  // Step 2: name ends at the first gap of 3+ spaces (title separator)
-  const name = cleaned.split(/\s{3,}/)[0].trim();
-
-  if (name && name.length >= 2 && name.length <= 30) {
-    // Clean trailing junk but keep internal spaces, dots, underscores, hyphens
-    const final = name.replace(/[^A-Za-z0-9_\-.\s*]+/g, '').replace(/\s+$/, '');
+function parseNames(text) {
+  const results = [];
+  const lines = text.split('\n');
+  
+  // Known title keywords to strip
+  const titles = ['Galact', 'Queens', 'Fantastic Magik', 'Champion', 'Conqueror', 'Guardian', 'Favorite', 'Immortal'];
+  
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line) continue;
+    
+    // Look for pattern: 1-3 digit number followed by text
+    const match = line.match(/(\d{1,3})\s+(.+)/);
+    if (!match) continue;
+    
+    let name = match[2];
+    
+    // Strip everything after title keywords
+    for (const t of titles) {
+      const idx = name.indexOf(t);
+      if (idx > 0) name = name.substring(0, idx);
+    }
+    
+    // Remove non-name characters
+    name = name.replace(/[^A-Za-z0-9_\-.\s*]/g, '');
+    
+    // Trim trailing short words (1-2 char OCR junk)
+    const words = name.trim().split(/\s+/);
+    while (words.length > 1 && words[words.length - 1].length <= 2) {
+      words.pop();
+    }
+    name = words.join(' ').trim();
+    
+    // Validate
+    const alphaCount = (name.match(/[A-Za-z0-9]/g) || []).length;
+    if (alphaCount < 3) continue;
+    if (name.length < 2 || name.length > 30) continue;
+    
     // Skip UI text
-    if (/^(ATTACK|DEFEND|STOP THE|HELP THE|STATUE|RETURN|PLACE|Galacta|Queen of|King of)/i.test(final)) return null;
-    if (final.length >= 2) return final;
+    if (/^(ATTACK|DEFEND|STOP|HELP|PREVENT|FROM|SCANNING|LOST|PAGES|DARKHOLD|HERBIE|STATUE|MOBILE|BATS)/i.test(name)) continue;
+    
+    // Skip if ratio of alphanumeric to total is too low (junk)
+    if (alphaCount / name.length < 0.5) continue;
+    
+    results.push({ name, confidence: 'med' });
   }
-
-  return null;
+  
+  return results;
 }
 
-// =============================================
-// UI LOGIC
-// =============================================
-
+// --- UI ---
 $('manualToggle').addEventListener('click', () => {
   $('manualArea').classList.toggle('active');
   if ($('manualArea').classList.contains('active')) $('nameInput').focus();
@@ -645,7 +397,7 @@ function renderPlayers() {
   if (players.length === 0) {
     $('playersSection').style.display = 'none';
     $('lookupAllBtn').classList.remove('visible');
-    if (!$('previewContainer').classList.contains('active') && !$('ocrStatus').classList.contains('active')) $('emptyState').style.display = 'block';
+    if (!$('previewContainer').classList.contains('active')) $('emptyState').style.display = 'block';
     return;
   }
   $('emptyState').style.display = 'none';
@@ -654,15 +406,13 @@ function renderPlayers() {
 
   $('playerList').innerHTML = players.map((p, i) => {
     const editing = editingIndex === i;
-    const c = p.confidence || 'high';
-    const cLabel = c === 'high' ? 'HIGH' : c === 'med' ? 'MED' : 'LOW';
     return `
-    <div class="player-card ${c!=='high'?'uncertain':''}" style="animation-delay:${i*0.03}s">
+    <div class="player-card" style="animation-delay:${i*0.03}s">
       <span class="player-index">${i+1}</span>
       <div class="player-info">
         ${editing
           ? `<input class="player-name-edit" id="edit-input-${i}" value="${esc(p.name)}" onkeydown="if(event.key==='Enter')confirmEdit(${i})" onblur="confirmEdit(${i})">`
-          : `<div class="player-name-row"><span class="player-name">${html(p.name)}</span><span class="confidence-tag ${c}">${cLabel}</span></div><div class="player-meta">S${currentSeason} -- tracker.gg</div>`}
+          : `<div class="player-name">${html(p.name)}</div><div class="player-meta">S${currentSeason} -- tracker.gg</div>`}
       </div>
       <div class="player-actions">${editing ? '' : `
         <button class="player-btn btn-edit" onclick="startEdit(${i})"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
