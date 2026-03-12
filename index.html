@@ -268,12 +268,24 @@ async function processImage(imageSrc) {
     // OCR the preprocessed image
     const result = await Tesseract.recognize(canvas, 'eng', {
       logger: m => {
+        dbg('Tesseract: ' + m.status + ' ' + Math.round((m.progress||0)*100) + '%');
         if (m.status === 'recognizing text') {
           const p = Math.round(10 + m.progress * 85);
           prog.style.width = p + '%';
           pct.textContent = p + '%';
-        } else if (m.status) {
-          msg.textContent = m.status + '...';
+        } else if (m.status === 'loading tesseract core') {
+          msg.textContent = 'Loading OCR engine...';
+          prog.style.width = '10%';
+        } else if (m.status === 'initializing tesseract') {
+          msg.textContent = 'Initializing OCR...';
+          prog.style.width = '11%';
+        } else if (m.status === 'loading language traineddata') {
+          msg.textContent = 'Downloading language data (~15MB)...';
+          prog.style.width = Math.round(11 + m.progress * 5) + '%';
+          pct.textContent = Math.round(11 + m.progress * 5) + '%';
+        } else if (m.status === 'initializing api') {
+          msg.textContent = 'Almost ready...';
+          prog.style.width = '17%';
         }
       }
     });
