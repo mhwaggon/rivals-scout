@@ -123,7 +123,7 @@
           <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
         </svg>
       </label>
-      <button class="photo-btn" onclick="$('photoRef').classList.remove('active')" title="Hide">
+      <button class="photo-btn" onclick="document.getElementById('photoRef').classList.remove('active')" title="Hide">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
@@ -164,11 +164,13 @@
 <div class="toast" id="toast"></div>
 
 <script>
+var $ = function(id) { return document.getElementById(id); };
 const TRACKER_BASE = 'https://tracker.gg/marvel-rivals/profile/ign/';
 let players = [];
 let currentSeason = '13';
 let editingIndex = -1;
-const $ = id => document.getElementById(id);
+
+try {
 
 $('seasonSelect').addEventListener('change', e => { currentSeason = e.target.value; renderPlayers(); });
 
@@ -248,6 +250,10 @@ function esc(s) { return s.replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
 function showToast(msg) {
   const t = $('toast'); t.textContent = msg; t.classList.add('visible');
   clearTimeout(t._to); t._to = setTimeout(() => t.classList.remove('visible'), 1800);
+}
+
+} catch(e) {
+  document.body.insertAdjacentHTML('beforeend', '<div style="position:fixed;top:0;left:0;right:0;padding:20px;background:red;color:white;font-size:14px;z-index:9999">JS Error: ' + e.message + '</div>');
 }
 </script>
 </body>
