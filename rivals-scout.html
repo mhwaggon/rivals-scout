@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Rivals Scout</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.1.1/tesseract.min.js"></script>
+<style>
+  :root {
+    --bg-dark: #0a0e1a;
+    --bg-card: #111828;
+    --bg-card-hover: #1a2340;
+    --accent-blue: #3b82f6;
+    --accent-cyan: #06b6d4;
+    --accent-red: #ef4444;
+    --accent-orange: #f97316;
+    --accent-gold: #fbbf24;
+    --accent-green: #22c55e;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --border: rgba(59, 130, 246, 0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Rajdhani', sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    min-height: 100dvh;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(ellipse at 20% 0%, rgba(59,130,246,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 100%, rgba(6,182,212,0.06) 0%, transparent 60%);
+  }
+
+  .header {
+    padding: 16px 20px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: rgba(10, 14, 26, 0.92);
+    backdrop-filter: blur(16px);
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 1px;
+  }
+
+  .logo-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .season-select {
+    margin-left: auto;
+    background: rgba(59,130,246,0.12);
+    border: 1px solid rgba(59,130,246,0.25);
+    border-radius: 6px;
+    padding: 4px 8px;
+    color: var(--accent-cyan);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .season-select option { background: var(--bg-dark); color: var(--text-primary); }
+
+  .main { padding: 16px; max-width: 480px; margin: 0 auto; }
+
+  .capture-btn {
+    width: 100%;
+    padding: 18px;
+    border: 2px dashed rgba(59,130,246,0.3);
+    border-radius: 14px;
+    background: rgba(59,130,246,0.05);
+    color: var(--text-primary);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .capture-btn:active { background: rgba(59,130,246,0.12); border-color: var(--accent-blue); transform: scale(0.98); }
+  .capture-btn svg { width: 24px; height: 24px; stroke: var(--accent-cyan); fill: none; }
+
+  .preview-container {
+    position: relative; margin-top: 12px; border-radius: 12px;
+    overflow: hidden; border: 1px solid var(--border); display: none;
+  }
+  .preview-container.active { display: block; }
+  .preview-container img { width: 100%; display: block; }
+
+  .preview-overlay {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 10px 14px; background: linear-gradient(transparent, rgba(0,0,0,0.85));
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .preview-label { font-size: 13px; color: var(--text-secondary); }
+
+  .retake-btn {
+    background: rgba(255,255,255,0.12); border: none; color: white;
+    font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600;
+    padding: 5px 12px; border-radius: 6px; cursor: pointer;
+  }
+
+  .ocr-status {
+    display: none; margin-top: 14px; padding: 16px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; text-align: center;
+  }
+  .ocr-status.active { display: block; }
+  .ocr-status p { font-size: 15px; color: var(--text-secondary); font-weight: 500; margin-bottom: 10px; }
+
+  .progress-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); border-radius: 3px; transition: width 0.3s; }
+  .ocr-pct { font-family: 'Orbitron', sans-serif; font-size: 12px; color: var(--accent-cyan); margin-top: 6px; }
+
+  .manual-section { margin-top: 14px; }
+
+  .manual-toggle {
+    width: 100%; background: none; border: none; color: var(--text-muted);
+    font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 500;
+    padding: 8px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px;
+  }
+
+  .manual-input-area { display: none; margin-top: 10px; }
+  .manual-input-area.active { display: block; }
+  .input-row { display: flex; gap: 8px; }
+
+  .name-input {
+    flex: 1; background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 14px; color: var(--text-primary);
+    font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 500; outline: none;
+  }
+  .name-input:focus { border-color: var(--accent-blue); }
+  .name-input::placeholder { color: var(--text-muted); }
+
+  .add-btn {
+    background: var(--accent-blue); border: none; border-radius: 8px;
+    padding: 10px 16px; color: white; font-family: 'Rajdhani', sans-serif;
+    font-size: 15px; font-weight: 700; cursor: pointer; white-space: nowrap;
+  }
+
+  .players-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding: 0 2px; }
+
+  .players-title {
+    font-family: 'Orbitron', sans-serif; font-size: 13px; font-weight: 600;
+    color: var(--text-secondary); letter-spacing: 2px; text-transform: uppercase;
+  }
+
+  .clear-all {
+    background: none; border: none; color: var(--accent-red);
+    font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600;
+    cursor: pointer; padding: 4px 8px;
+  }
+
+  .player-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .player-card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 12px 14px; display: flex; align-items: center; gap: 12px;
+    position: relative; overflow: hidden; animation: slideUp 0.25s ease-out both;
+  }
+
+  .player-card::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: linear-gradient(180deg, var(--accent-blue), var(--accent-cyan));
+  }
+  .player-card.uncertain::before { background: linear-gradient(180deg, var(--accent-orange), var(--accent-gold)); }
+
+  .player-index {
+    font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 700;
+    color: var(--text-muted); width: 18px; text-align: center; flex-shrink: 0;
+  }
+
+  .player-info { flex: 1; min-width: 0; }
+  .player-name-row { display: flex; align-items: center; gap: 8px; }
+
+  .player-name {
+    font-size: 18px; font-weight: 700; color: var(--text-primary);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  .confidence-tag {
+    flex-shrink: 0; font-size: 10px; font-weight: 700;
+    font-family: 'Orbitron', sans-serif; padding: 2px 6px; border-radius: 4px;
+  }
+  .confidence-tag.high { background: rgba(34,197,94,0.12); color: var(--accent-green); }
+  .confidence-tag.med { background: rgba(251,191,36,0.12); color: var(--accent-gold); }
+  .confidence-tag.low { background: rgba(239,68,68,0.12); color: var(--accent-red); }
+
+  .player-meta { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+
+  .player-name-edit {
+    font-size: 18px; font-weight: 700; color: var(--text-primary);
+    font-family: 'Rajdhani', sans-serif; background: rgba(255,255,255,0.06);
+    border: 1px solid var(--accent-blue); border-radius: 6px;
+    padding: 2px 8px; outline: none; width: 100%;
+  }
+
+  .player-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+  .player-btn {
+    width: 32px; height: 32px; border: none; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+  }
+  .player-btn svg { width: 15px; height: 15px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .btn-edit { background: rgba(59,130,246,0.1); }
+  .btn-edit svg { stroke: var(--accent-blue); }
+  .btn-remove { background: rgba(239,68,68,0.1); }
+  .btn-remove svg { stroke: var(--accent-red); }
+  .btn-open { background: rgba(6,182,212,0.1); text-decoration: none; }
+  .btn-open svg { stroke: var(--accent-cyan); }
+
+  .lookup-all-btn {
+    width: 100%; margin-top: 16px; padding: 14px; border: none; border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+    color: white; font-family: 'Orbitron', sans-serif; font-size: 14px;
+    font-weight: 700; letter-spacing: 1.5px; cursor: pointer; display: none;
+  }
+  .lookup-all-btn.visible { display: block; }
+  .lookup-all-btn:active { opacity: 0.85; transform: scale(0.98); }
+
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+  .empty-state svg { width: 48px; height: 48px; stroke: var(--text-muted); fill: none; opacity: 0.4; margin-bottom: 12px; }
+  .empty-state p { font-size: 15px; font-weight: 500; line-height: 1.5; }
+
+  .players-section { display: none; margin-top: 20px; }
+
+  .info-bar {
+    margin-top: 24px; padding: 12px 16px;
+    background: rgba(251, 191, 36, 0.06); border: 1px solid rgba(251, 191, 36, 0.15);
+    border-radius: 10px; font-size: 13px; color: var(--text-secondary); line-height: 1.5;
+  }
+  .info-bar strong { color: var(--accent-gold); font-weight: 600; }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--bg-card); border: 1px solid var(--border);
+    padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 600;
+    color: var(--text-primary); transition: transform 0.3s ease; z-index: 200; white-space: nowrap;
+  }
+  .toast.visible { transform: translateX(-50%) translateY(0); }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .player-card:nth-child(1) { animation-delay: 0.03s; }
+  .player-card:nth-child(2) { animation-delay: 0.06s; }
+  .player-card:nth-child(3) { animation-delay: 0.09s; }
+  .player-card:nth-child(4) { animation-delay: 0.12s; }
+  .player-card:nth-child(5) { animation-delay: 0.15s; }
+  .player-card:nth-child(6) { animation-delay: 0.18s; }
+
+  #ocrCanvas { display: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="logo">RIVALS SCOUT</div>
+    <div class="logo-sub">Player Lookup Tool</div>
+  </div>
+  <select class="season-select" id="seasonSelect">
+    <option value="13">S13</option>
+    <option value="12">S12</option>
+    <option value="11">S11</option>
+    <option value="10">S10</option>
+    <option value="9">S9</option>
+    <option value="8">S8</option>
+    <option value="7">S7</option>
+    <option value="6">S6</option>
+  </select>
+</div>
+
+<div class="main">
+
+  <label class="capture-btn" for="cameraInput">
+    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+      <circle cx="12" cy="13" r="4"/>
+    </svg>
+    Snap Scoreboard Screenshot
+  </label>
+  <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none">
+
+  <div class="preview-container" id="previewContainer">
+    <img id="previewImg" src="" alt="Screenshot">
+    <div class="preview-overlay">
+      <span class="preview-label" id="previewLabel">Screenshot captured</span>
+      <button class="retake-btn" onclick="document.getElementById('cameraInput').click()">Retake</button>
+    </div>
+  </div>
+
+  <div class="ocr-status" id="ocrStatus">
+    <p id="ocrMsg">Loading OCR engine...</p>
+    <div class="progress-bar"><div class="progress-fill" id="ocrProgress"></div></div>
+    <div class="ocr-pct" id="ocrPct">0%</div>
+  </div>
+
+  <div class="manual-section">
+    <button class="manual-toggle" id="manualToggle">+ Add player name manually</button>
+    <div class="manual-input-area" id="manualArea">
+      <div class="input-row">
+        <input class="name-input" id="nameInput" type="text" placeholder="Enter player name..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <button class="add-btn" id="addBtn">ADD</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="players-section" id="playersSection">
+    <div class="players-header">
+      <span class="players-title">Players</span>
+      <button class="clear-all" id="clearAll">Clear all</button>
+    </div>
+    <div class="player-list" id="playerList"></div>
+    <button class="lookup-all-btn" id="lookupAllBtn">OPEN ALL IN TRACKER.GG</button>
+  </div>
+
+  <div class="empty-state" id="emptyState">
+    <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+      <circle cx="9" cy="7" r="4"/>
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+    </svg>
+    <p>Snap a screenshot of your<br>match lobby to detect players</p>
+  </div>
+
+  <div class="info-bar">
+    <strong>How it works:</strong> Take a photo of your Marvel Rivals match screen. OCR automatically reads player names. Tap the pencil to fix any misreads, then tap the arrow to open their tracker.gg profile.
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<canvas id="ocrCanvas"></canvas>
+
+<script>
+const TRACKER_BASE = 'https://tracker.gg/marvel-rivals/profile/ign/';
+let players = [];
+let currentSeason = '13';
+let editingIndex = -1;
+
+const $ = id => document.getElementById(id);
+
+const seasonSelect = $('seasonSelect');
+const cameraInput = $('cameraInput');
+const previewContainer = $('previewContainer');
+const previewImg = $('previewImg');
+const previewLabel = $('previewLabel');
+const ocrStatus = $('ocrStatus');
+const ocrMsg = $('ocrMsg');
+const ocrProgress = $('ocrProgress');
+const ocrPct = $('ocrPct');
+const manualToggle = $('manualToggle');
+const manualArea = $('manualArea');
+const nameInput = $('nameInput');
+const addBtn = $('addBtn');
+const playerList = $('playerList');
+const playersSection = $('playersSection');
+const emptyState = $('emptyState');
+const lookupAllBtn = $('lookupAllBtn');
+const clearAllBtn = $('clearAll');
+const ocrCanvas = $('ocrCanvas');
+
+seasonSelect.addEventListener('change', () => { currentSeason = seasonSelect.value; renderPlayers(); showToast('Season ' + currentSeason); });
+
+// --- Camera ---
+cameraInput.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async (ev) => {
+    previewImg.src = ev.target.result;
+    previewContainer.classList.add('active');
+    previewLabel.textContent = 'Scanning...';
+    emptyState.style.display = 'none';
+    await runOCR(ev.target.result);
+  };
+  reader.readAsDataURL(file);
+});
+
+// --- Image Preprocessing ---
+function preprocessImage(imageSrc) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = ocrCanvas;
+      const ctx = canvas.getContext('2d');
+      // Scale up
+      const scale = Math.max(2, 2000 / img.width);
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const d = imageData.data;
+
+      // High-contrast binarize: MR has light player names on colored BG
+      for (let i = 0; i < d.length; i += 4) {
+        const lum = 0.299 * d[i] + 0.587 * d[i+1] + 0.114 * d[i+2];
+        const val = lum > 155 ? 255 : 0;
+        d[i] = val; d[i+1] = val; d[i+2] = val;
+      }
+      ctx.putImageData(imageData, 0, 0);
+      resolve(canvas.toDataURL('image/png'));
+    };
+    img.src = imageSrc;
+  });
+}
+
+// --- OCR ---
+async function runOCR(imageSrc) {
+  ocrStatus.classList.add('active');
+  ocrMsg.textContent = 'Preprocessing image...';
+  ocrProgress.style.width = '5%';
+  ocrPct.textContent = '5%';
+
+  try {
+    const processed = await preprocessImage(imageSrc);
+    ocrMsg.textContent = 'Running text recognition...';
+    ocrProgress.style.width = '15%';
+    ocrPct.textContent = '15%';
+
+    const result = await Tesseract.recognize(processed, 'eng', {
+      logger: (m) => {
+        if (m.status === 'recognizing text') {
+          const pct = Math.round(15 + m.progress * 80);
+          ocrProgress.style.width = pct + '%';
+          ocrPct.textContent = pct + '%';
+        }
+      }
+    });
+
+    ocrProgress.style.width = '100%';
+    ocrPct.textContent = '100%';
+    ocrMsg.textContent = 'Extracting player names...';
+
+    const extracted = extractPlayerNames(result.data);
+
+    setTimeout(() => {
+      ocrStatus.classList.remove('active');
+      previewLabel.textContent = 'Screenshot captured';
+      if (extracted.length > 0) {
+        players = extracted;
+        renderPlayers();
+        showToast(extracted.length + ' player(s) detected');
+        manualArea.classList.add('active');
+        manualToggle.textContent = '+ Add missed players';
+      } else {
+        showToast('No names found -- try manual entry');
+        manualArea.classList.add('active');
+        nameInput.focus();
+      }
+    }, 400);
+  } catch (err) {
+    console.error('OCR error:', err);
+    ocrStatus.classList.remove('active');
+    showToast('OCR failed -- use manual entry');
+    manualArea.classList.add('active');
+    nameInput.focus();
+  }
+}
+
+// --- Name Extraction ---
+function extractPlayerNames(ocrData) {
+  const found = [];
+  const lines = ocrData.lines || [];
+
+  // UI text to filter out
+  const ignoreRe = /^(defend|attack|stop|the|bats|mobile|competitive|match|queue|assemble|loading|waiting|vs\.?|team|ranked|unranked|quick|play|custom|vanguard|duelist|strategist|overview|season|stats|ready|lobby|searching|cancel|select|hero|elimination|time|round|victory|defeat|game|mode|objective|payload|capture|escort|area)/i;
+
+  // Title patterns (shown next to names but not the name itself)
+  const titleRe = /(queen\s*of\s*limbo|queenslayer|king\s*of|champion|conqueror|guardian|destroyer|master|legend|immortal|eternal|herald|celestial|grandmaster|diamond|platinum|gold|silver|bronze|one above all)/i;
+
+  for (const line of lines) {
+    const rawText = (line.text || '').trim();
+    if (!rawText || rawText.length < 2) continue;
+
+    const confidence = line.confidence || 0;
+    if (confidence < 25) continue;
+
+    // Split line by multiple spaces or tabs (sometimes name + title on same line)
+    const segments = rawText.split(/\s{3,}|\t+/);
+
+    for (let seg of segments) {
+      seg = seg.trim();
+      if (!seg || seg.length < 2) continue;
+
+      // Skip ignored UI text
+      if (ignoreRe.test(seg)) continue;
+      // Skip if it IS a title
+      if (titleRe.test(seg)) continue;
+      // Skip pure numbers
+      if (/^\d+$/.test(seg)) continue;
+      // Skip percentages
+      if (/^\d+%$/.test(seg)) continue;
+
+      // Try extracting name after a level number prefix like "85 IFluttershy"
+      let name = seg;
+      const numMatch = seg.match(/^(\d{1,3})\s+(.+)/);
+      if (numMatch) {
+        name = numMatch[2];
+      }
+
+      // Also strip a trailing title if on the same segment
+      name = name.replace(titleRe, '').trim();
+
+      // Clean OCR artifacts
+      name = name
+        .replace(/[\[\]{}|\\`~]/g, '')
+        .replace(/^[^a-zA-Z0-9*]+/, '')
+        .replace(/[^a-zA-Z0-9_\-*]+$/, '')
+        .trim();
+
+      if (name.length < 2 || name.length > 25) continue;
+
+      // Skip common short English words that aren't names
+      if (/^(the|and|for|with|from|this|that|have|are|was|were|been|will|you|can|not|all|but|its|had|has|his|her|him|she|who|how|may|new|now|old|see|way|did|get|got|let|say|too|use|our|out|own|off|why|big|end|far|few|put|ran|run|set|sit|try|ask|top|per|com|www|org|gg)$/i.test(name)) continue;
+
+      // Determine confidence level
+      let confLevel = 'high';
+      if (confidence < 55) confLevel = 'low';
+      else if (confidence < 75) confLevel = 'med';
+
+      // Deduplicate
+      if (!found.some(p => p.name.toLowerCase() === name.toLowerCase())) {
+        found.push({ name, confidence: confLevel });
+      }
+    }
+  }
+
+  // Cap at 12 (max players in a match)
+  if (found.length > 12) {
+    const order = { high: 0, med: 1, low: 2 };
+    found.sort((a, b) => order[a.confidence] - order[b.confidence]);
+    return found.slice(0, 12);
+  }
+
+  return found;
+}
+
+// --- Manual Entry ---
+manualToggle.addEventListener('click', () => {
+  manualArea.classList.toggle('active');
+  if (manualArea.classList.contains('active')) nameInput.focus();
+});
+
+function addPlayer(name) {
+  name = name.trim();
+  if (!name) return;
+  if (players.some(p => p.name.toLowerCase() === name.toLowerCase())) { showToast('Already added'); return; }
+  players.push({ name, confidence: 'high' });
+  renderPlayers();
+  nameInput.value = '';
+  nameInput.focus();
+}
+
+addBtn.addEventListener('click', () => addPlayer(nameInput.value));
+nameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') addPlayer(nameInput.value); });
+
+// --- Player Management ---
+function removePlayer(i) { players.splice(i, 1); editingIndex = -1; renderPlayers(); }
+
+function startEdit(i) { editingIndex = i; renderPlayers(); const el = $('edit-input-' + i); if (el) { el.focus(); el.select(); } }
+
+function confirmEdit(i) {
+  const el = $('edit-input-' + i);
+  if (el && el.value.trim()) { players[i].name = el.value.trim(); players[i].confidence = 'high'; }
+  editingIndex = -1;
+  renderPlayers();
+}
+
+// Make globally accessible for inline handlers
+window.removePlayer = removePlayer;
+window.startEdit = startEdit;
+window.confirmEdit = confirmEdit;
+
+function getTrackerUrl(name) {
+  return TRACKER_BASE + encodeURIComponent(name) + '/overview?season=' + currentSeason;
+}
+
+function renderPlayers() {
+  if (players.length === 0) {
+    playersSection.style.display = 'none';
+    lookupAllBtn.classList.remove('visible');
+    if (!previewContainer.classList.contains('active') && !ocrStatus.classList.contains('active')) {
+      emptyState.style.display = 'block';
+    }
+    return;
+  }
+
+  emptyState.style.display = 'none';
+  playersSection.style.display = 'block';
+  lookupAllBtn.classList.add('visible');
+
+  playerList.innerHTML = players.map((p, i) => {
+    const editing = editingIndex === i;
+    const c = p.confidence || 'high';
+    const cLabel = c === 'high' ? 'HIGH' : c === 'med' ? 'MED' : 'LOW';
+    return `
+    <div class="player-card ${c !== 'high' ? 'uncertain' : ''}" style="animation-delay:${i*0.03}s">
+      <span class="player-index">${i+1}</span>
+      <div class="player-info">
+        ${editing
+          ? `<input class="player-name-edit" id="edit-input-${i}" value="${esc(p.name)}" onkeydown="if(event.key==='Enter')confirmEdit(${i})" onblur="confirmEdit(${i})">`
+          : `<div class="player-name-row">
+              <span class="player-name">${html(p.name)}</span>
+              <span class="confidence-tag ${c}">${cLabel}</span>
+            </div>
+            <div class="player-meta">S${currentSeason} -- tracker.gg</div>`
+        }
+      </div>
+      <div class="player-actions">
+        ${editing ? '' : `
+          <button class="player-btn btn-edit" onclick="startEdit(${i})" title="Edit">
+            <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="player-btn btn-remove" onclick="removePlayer(${i})" title="Remove">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          <a href="${getTrackerUrl(p.name)}" target="_blank" rel="noopener" class="player-btn btn-open" title="Open">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+        `}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+clearAllBtn.addEventListener('click', () => { players = []; editingIndex = -1; renderPlayers(); showToast('Cleared'); });
+
+lookupAllBtn.addEventListener('click', () => {
+  if (!players.length) return;
+  players.forEach((p, i) => setTimeout(() => window.open(getTrackerUrl(p.name), '_blank'), i * 300));
+  showToast('Opening ' + players.length + ' profiles...');
+});
+
+// Utils
+function html(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function esc(s) { return s.replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+
+function showToast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('visible');
+  clearTimeout(t._to);
+  t._to = setTimeout(() => t.classList.remove('visible'), 2400);
+}
+</script>
+</body>
+</html>
