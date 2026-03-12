@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Get Help!</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.1.1/tesseract.min.js"></script>
 <style>
   :root {
     --bg-dark:#0a0e1a;--bg-card:#111828;--accent-blue:#3b82f6;--accent-cyan:#06b6d4;
@@ -17,8 +16,9 @@
   body{font-family:'Rajdhani',sans-serif;background:var(--bg-dark);color:var(--text-primary);min-height:100dvh;
     background-image:radial-gradient(ellipse at 20% 0%,rgba(59,130,246,0.08) 0%,transparent 60%),
     radial-gradient(ellipse at 80% 100%,rgba(6,182,212,0.06) 0%,transparent 60%)}
-  .header{padding:16px 20px 12px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);
-    position:sticky;top:0;background:rgba(10,14,26,0.92);backdrop-filter:blur(16px);z-index:100}
+
+  .header{padding:14px 20px 10px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);
+    position:sticky;top:0;background:rgba(10,14,26,0.95);backdrop-filter:blur(16px);z-index:100}
   .logo{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:800;
     background:linear-gradient(135deg,var(--accent-blue),var(--accent-cyan));
     -webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px}
@@ -26,140 +26,143 @@
     border-radius:6px;padding:4px 8px;color:var(--accent-cyan);font-family:'Orbitron',sans-serif;
     font-size:11px;font-weight:600;letter-spacing:1px;cursor:pointer;outline:none}
   .season-select option{background:var(--bg-dark);color:var(--text-primary)}
-  .main{padding:16px;max-width:480px;margin:0 auto}
-  .capture-btn{width:100%;padding:18px;border:2px dashed rgba(59,130,246,0.3);border-radius:14px;
-    background:rgba(59,130,246,0.05);color:var(--text-primary);font-family:'Rajdhani',sans-serif;
-    font-size:17px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px}
-  .capture-btn:active{background:rgba(59,130,246,0.12);border-color:var(--accent-blue);transform:scale(0.98)}
-  .capture-btn svg{width:24px;height:24px;stroke:var(--accent-cyan);fill:none}
-  .preview-container{position:relative;margin-top:12px;border-radius:12px;overflow:hidden;border:1px solid var(--border);display:none}
-  .preview-container.active{display:block}
-  .preview-container img{width:100%;display:block}
-  .preview-overlay{position:absolute;bottom:0;left:0;right:0;padding:10px 14px;
-    background:linear-gradient(transparent,rgba(0,0,0,0.85));display:flex;align-items:center;justify-content:space-between}
-  .preview-label{font-size:13px;color:var(--text-secondary)}
-  .retake-btn{background:rgba(255,255,255,0.12);border:none;color:white;font-family:'Rajdhani',sans-serif;
-    font-size:13px;font-weight:600;padding:5px 12px;border-radius:6px;cursor:pointer}
-  .ocr-status{display:none;margin-top:14px;padding:16px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;text-align:center}
-  .ocr-status.active{display:block}
-  .ocr-status p{font-size:15px;color:var(--text-secondary);font-weight:500;margin-bottom:10px}
-  .progress-bar{width:100%;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden}
-  .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--accent-blue),var(--accent-cyan));border-radius:3px;transition:width 0.3s}
-  .ocr-pct{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--accent-cyan);margin-top:6px}
-  .debug-log{margin-top:10px;padding:8px 12px;background:rgba(0,0,0,0.3);border-radius:8px;font-size:11px;
-    color:var(--text-muted);font-family:monospace;max-height:120px;overflow-y:auto;display:none;white-space:pre-wrap}
-  .debug-log.active{display:block}
-  .manual-section{margin-top:14px}
-  .manual-toggle{width:100%;background:none;border:none;color:var(--text-muted);font-family:'Rajdhani',sans-serif;
-    font-size:14px;font-weight:500;padding:8px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
-  .manual-input-area{display:none;margin-top:10px}
-  .manual-input-area.active{display:block}
-  .input-row{display:flex;gap:8px}
-  .name-input{flex:1;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;
-    color:var(--text-primary);font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:500;outline:none}
+
+  .main{padding:12px 16px;max-width:480px;margin:0 auto}
+
+  /* Photo reference - stays visible while typing */
+  .photo-ref{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--border);
+    margin-bottom:12px;display:none;max-height:35vh}
+  .photo-ref.active{display:block}
+  .photo-ref img{width:100%;display:block;object-fit:contain;max-height:35vh}
+  .photo-ref .photo-actions{position:absolute;top:8px;right:8px;display:flex;gap:6px}
+  .photo-ref .photo-btn{background:rgba(0,0,0,0.6);border:none;color:white;width:28px;height:28px;
+    border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .photo-ref .photo-btn svg{width:14px;height:14px;stroke:white;fill:none;stroke-width:2}
+
+  /* Input area - always prominent */
+  .input-area{display:flex;gap:8px;margin-bottom:12px}
+  .name-input{flex:1;background:var(--bg-card);border:2px solid var(--border);border-radius:10px;padding:12px 16px;
+    color:var(--text-primary);font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:600;outline:none;
+    transition:border-color 0.15s}
   .name-input:focus{border-color:var(--accent-blue)}
-  .name-input::placeholder{color:var(--text-muted)}
-  .add-btn{background:var(--accent-blue);border:none;border-radius:8px;padding:10px 16px;color:white;
-    font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;cursor:pointer;white-space:nowrap}
-  .players-section{display:none;margin-top:20px}
-  .players-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:0 2px}
-  .players-title{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:600;color:var(--text-secondary);letter-spacing:2px;text-transform:uppercase}
+  .name-input::placeholder{color:var(--text-muted);font-weight:500}
+  .add-btn{background:linear-gradient(135deg,var(--accent-blue),var(--accent-cyan));border:none;border-radius:10px;
+    padding:12px 20px;color:white;font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;
+    cursor:pointer;white-space:nowrap;letter-spacing:0.5px}
+  .add-btn:active{opacity:0.85;transform:scale(0.97)}
+
+  .snap-btn{width:100%;padding:14px;border:2px dashed rgba(59,130,246,0.3);border-radius:10px;
+    background:rgba(59,130,246,0.05);color:var(--text-secondary);font-family:'Rajdhani',sans-serif;
+    font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+    margin-bottom:12px;transition:all 0.15s}
+  .snap-btn:active{background:rgba(59,130,246,0.12);border-color:var(--accent-blue)}
+  .snap-btn svg{width:20px;height:20px;stroke:var(--accent-cyan);fill:none}
+  .snap-btn.has-photo{padding:10px;border-style:solid;border-color:rgba(59,130,246,0.2)}
+
+  /* Player cards */
+  .players-section{margin-top:8px}
+  .players-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:0 2px}
+  .players-title{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:600;color:var(--text-secondary);letter-spacing:2px;text-transform:uppercase}
+  .players-count{font-size:12px;color:var(--text-muted)}
   .clear-all{background:none;border:none;color:var(--accent-red);font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;cursor:pointer;padding:4px 8px}
-  .player-list{display:flex;flex-direction:column;gap:8px}
-  .player-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;
-    display:flex;align-items:center;gap:12px;position:relative;overflow:hidden;animation:slideUp 0.25s ease-out both}
+  .player-list{display:flex;flex-direction:column;gap:6px}
+
+  .player-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;
+    display:flex;align-items:center;gap:10px;position:relative;overflow:hidden;animation:slideUp 0.2s ease-out both}
   .player-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--accent-blue),var(--accent-cyan))}
-  .player-index{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;color:var(--text-muted);width:18px;text-align:center;flex-shrink:0}
+  .player-index{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;color:var(--text-muted);width:16px;text-align:center;flex-shrink:0}
   .player-info{flex:1;min-width:0}
-  .player-name{font-size:18px;font-weight:700;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .player-meta{font-size:12px;color:var(--text-muted);margin-top:1px}
-  .player-name-edit{font-size:18px;font-weight:700;color:var(--text-primary);font-family:'Rajdhani',sans-serif;
+  .player-name{font-size:17px;font-weight:700;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .player-meta{font-size:11px;color:var(--text-muted);margin-top:1px}
+  .player-name-edit{font-size:17px;font-weight:700;color:var(--text-primary);font-family:'Rajdhani',sans-serif;
     background:rgba(255,255,255,0.06);border:1px solid var(--accent-blue);border-radius:6px;padding:2px 8px;outline:none;width:100%}
-  .player-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
-  .player-btn{width:32px;height:32px;border:none;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer}
-  .player-btn svg{width:15px;height:15px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .player-actions{display:flex;align-items:center;gap:5px;flex-shrink:0}
+  .player-btn{width:30px;height:30px;border:none;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .player-btn svg{width:14px;height:14px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
   .btn-edit{background:rgba(59,130,246,0.1)} .btn-edit svg{stroke:var(--accent-blue)}
   .btn-remove{background:rgba(239,68,68,0.1)} .btn-remove svg{stroke:var(--accent-red)}
   .btn-open{background:rgba(6,182,212,0.1);text-decoration:none;display:flex} .btn-open svg{stroke:var(--accent-cyan)}
-  .lookup-all-btn{width:100%;margin-top:16px;padding:14px;border:none;border-radius:12px;
+
+  .lookup-all-btn{width:100%;margin-top:12px;padding:14px;border:none;border-radius:10px;
     background:linear-gradient(135deg,var(--accent-blue),var(--accent-cyan));color:white;
-    font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;letter-spacing:1.5px;cursor:pointer;display:none}
+    font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;cursor:pointer;display:none}
   .lookup-all-btn.visible{display:block}
   .lookup-all-btn:active{opacity:0.85;transform:scale(0.98)}
-  .empty-state{text-align:center;padding:40px 20px;color:var(--text-muted)}
-  .empty-state svg{width:48px;height:48px;stroke:var(--text-muted);fill:none;opacity:0.4;margin-bottom:12px}
-  .empty-state p{font-size:15px;font-weight:500;line-height:1.5}
-  .info-bar{margin-top:24px;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.15);
-    border-radius:10px;font-size:13px;color:var(--text-secondary);line-height:1.5}
-  .info-bar strong{color:var(--accent-gold)}
-  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg-card);
-    border:1px solid var(--border);padding:10px 20px;border-radius:10px;font-size:14px;font-weight:600;
+
+  .tip{margin-top:16px;padding:10px 14px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.15);
+    border-radius:8px;font-size:12px;color:var(--text-muted);line-height:1.4}
+  .tip strong{color:var(--accent-gold)}
+
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg-card);
+    border:1px solid var(--border);padding:8px 18px;border-radius:8px;font-size:14px;font-weight:600;
     color:var(--text-primary);transition:transform 0.3s ease;z-index:200;white-space:nowrap}
   .toast.visible{transform:translateX(-50%) translateY(0)}
-  @keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-  .player-card:nth-child(1){animation-delay:.03s}.player-card:nth-child(2){animation-delay:.06s}
-  .player-card:nth-child(3){animation-delay:.09s}.player-card:nth-child(4){animation-delay:.12s}
-  .player-card:nth-child(5){animation-delay:.15s}.player-card:nth-child(6){animation-delay:.18s}
+
+  @keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  .player-card:nth-child(1){animation-delay:.02s}.player-card:nth-child(2){animation-delay:.04s}
+  .player-card:nth-child(3){animation-delay:.06s}.player-card:nth-child(4){animation-delay:.08s}
+  .player-card:nth-child(5){animation-delay:.10s}.player-card:nth-child(6){animation-delay:.12s}
 </style>
 </head>
 <body>
 <div class="header">
-  <div><div class="logo">GET HELP!</div></div>
+  <div class="logo">GET HELP!</div>
   <select class="season-select" id="seasonSelect">
     <option value="13">S13</option><option value="12">S12</option><option value="11">S11</option>
     <option value="10">S10</option><option value="9">S9</option><option value="8">S8</option>
   </select>
 </div>
+
 <div class="main">
-  <label class="capture-btn" for="cameraInput">
+  <!-- Photo reference -->
+  <div class="photo-ref" id="photoRef">
+    <img id="photoImg" src="" alt="Enemy team">
+    <div class="photo-actions">
+      <label class="photo-btn" for="cameraInput" title="Retake">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
+        </svg>
+      </label>
+      <button class="photo-btn" onclick="$('photoRef').classList.remove('active')" title="Hide">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Snap button (shown when no photo) -->
+  <label class="snap-btn" id="snapBtn" for="cameraInput">
     <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
     </svg>
-    Snap Enemy Team
+    Snap enemy team for reference
   </label>
   <input type="file" id="cameraInput" accept="image/*" style="display:none">
-  <div class="preview-container" id="previewContainer">
-    <img id="previewImg" src="" alt="Screenshot">
-    <div class="preview-overlay">
-      <span class="preview-label" id="previewLabel">Screenshot captured</span>
-      <button class="retake-btn" onclick="document.getElementById('cameraInput').click()">Retake</button>
-    </div>
+
+  <!-- Name input - always visible and ready -->
+  <div class="input-area">
+    <input class="name-input" id="nameInput" type="text" placeholder="Type player name..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <button class="add-btn" id="addBtn">ADD</button>
   </div>
-  <div class="ocr-status" id="ocrStatus">
-    <p id="ocrMsg">Processing...</p>
-    <div class="progress-bar"><div class="progress-fill" id="ocrProgress"></div></div>
-    <div class="ocr-pct" id="ocrPct">0%</div>
-  </div>
-  <div class="debug-log" id="debugLog"></div>
-  <div class="manual-section">
-    <button class="manual-toggle" id="manualToggle">+ Add player name manually</button>
-    <div class="manual-input-area" id="manualArea">
-      <div class="input-row">
-        <input class="name-input" id="nameInput" type="text" placeholder="Player name..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-        <button class="add-btn" id="addBtn">ADD</button>
-      </div>
-    </div>
-  </div>
-  <div class="players-section" id="playersSection">
+
+  <!-- Player list -->
+  <div class="players-section" id="playersSection" style="display:none">
     <div class="players-header">
-      <span class="players-title">Players</span>
-      <button class="clear-all" id="clearAll">Clear all</button>
+      <span class="players-title">Enemy Team</span>
+      <button class="clear-all" id="clearAll">Clear</button>
     </div>
     <div class="player-list" id="playerList"></div>
     <button class="lookup-all-btn" id="lookupAllBtn">OPEN ALL IN TRACKER.GG</button>
   </div>
-  <div class="empty-state" id="emptyState">
-    <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-    </svg>
-    <p>Snap a photo of the enemy team<br>on the loading screen</p>
-  </div>
-  <div class="info-bar">
-    <strong>Tip:</strong> Snap a photo of your TV showing the enemy team on loading screen. The closer and straighter the better.
+
+  <div class="tip">
+    <strong>Speed tip:</strong> Snap a photo of the loading screen, then read and type each name. Hit ADD or Enter after each one. Tap the arrow to check any player on tracker.gg.
   </div>
 </div>
+
 <div class="toast" id="toast"></div>
+
 <script>
 const TRACKER_BASE = 'https://tracker.gg/marvel-rivals/profile/ign/';
 let players = [];
@@ -167,240 +170,33 @@ let currentSeason = '13';
 let editingIndex = -1;
 const $ = id => document.getElementById(id);
 
-// Debug logger
-function dbg(msg) {
-  console.log(msg);
-  const el = $('debugLog');
-  el.textContent += msg + '\n';
-  el.classList.add('active');
-  el.scrollTop = el.scrollHeight;
-}
-
 $('seasonSelect').addEventListener('change', e => { currentSeason = e.target.value; renderPlayers(); });
 
-$('cameraInput').addEventListener('change', async e => {
+// Photo handling
+$('cameraInput').addEventListener('change', e => {
   const file = e.target.files[0];
   if (!file) return;
-  $('debugLog').textContent = '';
-  $('debugLog').classList.remove('active');
   const reader = new FileReader();
-  reader.onload = async ev => {
-    $('previewImg').src = ev.target.result;
-    $('previewContainer').classList.add('active');
-    $('previewLabel').textContent = 'Processing...';
-    $('emptyState').style.display = 'none';
-    await processImage(ev.target.result);
+  reader.onload = ev => {
+    $('photoImg').src = ev.target.result;
+    $('photoRef').classList.add('active');
+    $('snapBtn').classList.add('has-photo');
+    $('snapBtn').innerHTML = '<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Retake photo';
+    $('nameInput').focus();
   };
   reader.readAsDataURL(file);
 });
 
-async function processImage(imageSrc) {
-  const status = $('ocrStatus');
-  const msg = $('ocrMsg');
-  const prog = $('ocrProgress');
-  const pct = $('ocrPct');
-
-  status.classList.add('active');
-  msg.textContent = 'Preprocessing image...';
-  prog.style.width = '5%';
-  pct.textContent = '5%';
-
-  try {
-    // Load image
-    const img = await new Promise((res, rej) => {
-      const i = new Image();
-      i.onload = () => res(i);
-      i.onerror = rej;
-      i.src = imageSrc;
-    });
-
-    dbg('Image loaded: ' + img.width + 'x' + img.height);
-
-    // Crop left 50% of image (where names are)
-    const cropW = Math.floor(img.width * 0.5);
-    const cropH = img.height;
-    
-    // Scale up but cap at reasonable size for mobile
-    const maxDim = 2000;
-    let scale = 2;
-    if (cropW * scale > maxDim) scale = Math.floor(maxDim / cropW);
-    if (scale < 1) scale = 1;
-
-    const canvas = document.createElement('canvas');
-    canvas.width = cropW * scale;
-    canvas.height = cropH * scale;
-    const ctx = canvas.getContext('2d');
-
-    dbg('Crop: ' + cropW + 'x' + cropH + ', scale: ' + scale + ', canvas: ' + canvas.width + 'x' + canvas.height);
-
-    // Draw left half scaled up
-    ctx.drawImage(img, 0, 0, cropW, cropH, 0, 0, cropW * scale, cropH * scale);
-
-    // Increase contrast via pixel manipulation
-    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const d = imgData.data;
-    const totalPx = canvas.width * canvas.height;
-
-    // Compute grayscale and find threshold
-    const gray = new Uint8Array(totalPx);
-    for (let i = 0; i < totalPx; i++) {
-      gray[i] = Math.round(0.299 * d[i*4] + 0.587 * d[i*4+1] + 0.114 * d[i*4+2]);
-    }
-
-    // Sort a sample to find threshold (avoid sorting millions of values)
-    const sampleSize = Math.min(50000, totalPx);
-    const step = Math.max(1, Math.floor(totalPx / sampleSize));
-    const samples = [];
-    for (let i = 0; i < totalPx; i += step) {
-      samples.push(gray[i]);
-    }
-    samples.sort((a, b) => a - b);
-    const thresh = samples[Math.floor(samples.length * 0.82)];
-
-    dbg('Threshold: ' + thresh + ' (from ' + samples.length + ' samples)');
-
-    // Binarize: bright text -> black on white (Tesseract prefers dark text on light bg)
-    for (let i = 0; i < totalPx; i++) {
-      const val = gray[i] > thresh ? 0 : 255;
-      d[i*4] = val; d[i*4+1] = val; d[i*4+2] = val; d[i*4+3] = 255;
-    }
-    ctx.putImageData(imgData, 0, 0);
-
-    msg.textContent = 'Reading text (this takes ~15-30s)...';
-    prog.style.width = '10%';
-    pct.textContent = '10%';
-
-    dbg('Starting Tesseract OCR...');
-
-    // OCR the preprocessed image
-    const result = await Tesseract.recognize(canvas, 'eng', {
-      logger: m => {
-        dbg('Tesseract: ' + m.status + ' ' + Math.round((m.progress||0)*100) + '%');
-        if (m.status === 'recognizing text') {
-          const p = Math.round(10 + m.progress * 85);
-          prog.style.width = p + '%';
-          pct.textContent = p + '%';
-        } else if (m.status === 'loading tesseract core') {
-          msg.textContent = 'Loading OCR engine...';
-          prog.style.width = '10%';
-        } else if (m.status === 'initializing tesseract') {
-          msg.textContent = 'Initializing OCR...';
-          prog.style.width = '11%';
-        } else if (m.status === 'loading language traineddata') {
-          msg.textContent = 'Downloading language data (~15MB)...';
-          prog.style.width = Math.round(11 + m.progress * 5) + '%';
-          pct.textContent = Math.round(11 + m.progress * 5) + '%';
-        } else if (m.status === 'initializing api') {
-          msg.textContent = 'Almost ready...';
-          prog.style.width = '17%';
-        }
-      }
-    });
-
-    prog.style.width = '100%';
-    pct.textContent = '100%';
-    msg.textContent = 'Extracting names...';
-
-    const rawText = result.data.text || '';
-    dbg('OCR complete. Raw text:\n' + rawText);
-
-    // Parse names from OCR output
-    const names = parseNames(rawText);
-    dbg('Parsed names: ' + JSON.stringify(names));
-
-    setTimeout(() => {
-      status.classList.remove('active');
-      $('previewLabel').textContent = 'Screenshot captured';
-      if (names.length > 0) {
-        const seen = new Set();
-        players = names.filter(n => {
-          const key = n.name.toLowerCase();
-          if (seen.has(key)) return false;
-          seen.add(key);
-          return true;
-        });
-        renderPlayers();
-        showToast(players.length + ' player(s) detected');
-      } else {
-        showToast('No names found -- add manually');
-      }
-      $('manualArea').classList.add('active');
-      $('manualToggle').textContent = '+ Add missed players';
-    }, 300);
-
-  } catch (err) {
-    dbg('ERROR: ' + err.message + '\n' + err.stack);
-    status.classList.remove('active');
-    showToast('Error -- try manual entry');
-    $('manualArea').classList.add('active');
-    $('nameInput').focus();
-  }
-}
-
-function parseNames(text) {
-  const results = [];
-  const lines = text.split('\n');
-  
-  // Known title keywords to strip
-  const titles = ['Galact', 'Queens', 'Fantastic Magik', 'Champion', 'Conqueror', 'Guardian', 'Favorite', 'Immortal'];
-  
-  for (const rawLine of lines) {
-    const line = rawLine.trim();
-    if (!line) continue;
-    
-    // Look for pattern: 1-3 digit number followed by text
-    const match = line.match(/(\d{1,3})\s+(.+)/);
-    if (!match) continue;
-    
-    let name = match[2];
-    
-    // Strip everything after title keywords
-    for (const t of titles) {
-      const idx = name.indexOf(t);
-      if (idx > 0) name = name.substring(0, idx);
-    }
-    
-    // Remove non-name characters
-    name = name.replace(/[^A-Za-z0-9_\-.\s*]/g, '');
-    
-    // Trim trailing short words (1-2 char OCR junk)
-    const words = name.trim().split(/\s+/);
-    while (words.length > 1 && words[words.length - 1].length <= 2) {
-      words.pop();
-    }
-    name = words.join(' ').trim();
-    
-    // Validate
-    const alphaCount = (name.match(/[A-Za-z0-9]/g) || []).length;
-    if (alphaCount < 3) continue;
-    if (name.length < 2 || name.length > 30) continue;
-    
-    // Skip UI text
-    if (/^(ATTACK|DEFEND|STOP|HELP|PREVENT|FROM|SCANNING|LOST|PAGES|DARKHOLD|HERBIE|STATUE|MOBILE|BATS)/i.test(name)) continue;
-    
-    // Skip if ratio of alphanumeric to total is too low (junk)
-    if (alphaCount / name.length < 0.5) continue;
-    
-    results.push({ name, confidence: 'med' });
-  }
-  
-  return results;
-}
-
-// --- UI ---
-$('manualToggle').addEventListener('click', () => {
-  $('manualArea').classList.toggle('active');
-  if ($('manualArea').classList.contains('active')) $('nameInput').focus();
-});
-
+// Add player
 function addPlayer(name) {
   name = name.trim();
   if (!name) return;
   if (players.some(p => p.name.toLowerCase() === name.toLowerCase())) { showToast('Already added'); return; }
-  players.push({ name, confidence: 'high' });
+  players.push({ name });
   renderPlayers();
   $('nameInput').value = '';
   $('nameInput').focus();
+  showToast('Added ' + name);
 }
 
 $('addBtn').addEventListener('click', () => addPlayer($('nameInput').value));
@@ -408,7 +204,7 @@ $('nameInput').addEventListener('keydown', e => { if (e.key === 'Enter') addPlay
 
 window.removePlayer = i => { players.splice(i, 1); editingIndex = -1; renderPlayers(); };
 window.startEdit = i => { editingIndex = i; renderPlayers(); const el = $('edit-input-' + i); if (el) { el.focus(); el.select(); } };
-window.confirmEdit = i => { const el = $('edit-input-' + i); if (el && el.value.trim()) { players[i].name = el.value.trim(); players[i].confidence = 'high'; } editingIndex = -1; renderPlayers(); };
+window.confirmEdit = i => { const el = $('edit-input-' + i); if (el && el.value.trim()) { players[i].name = el.value.trim(); } editingIndex = -1; renderPlayers(); };
 
 function getTrackerUrl(name) { return TRACKER_BASE + encodeURIComponent(name) + '/overview?season=' + currentSeason; }
 
@@ -416,17 +212,15 @@ function renderPlayers() {
   if (players.length === 0) {
     $('playersSection').style.display = 'none';
     $('lookupAllBtn').classList.remove('visible');
-    if (!$('previewContainer').classList.contains('active')) $('emptyState').style.display = 'block';
     return;
   }
-  $('emptyState').style.display = 'none';
   $('playersSection').style.display = 'block';
   $('lookupAllBtn').classList.add('visible');
 
   $('playerList').innerHTML = players.map((p, i) => {
     const editing = editingIndex === i;
     return `
-    <div class="player-card" style="animation-delay:${i*0.03}s">
+    <div class="player-card" style="animation-delay:${i*0.02}s">
       <span class="player-index">${i+1}</span>
       <div class="player-info">
         ${editing
@@ -453,7 +247,7 @@ function html(s) { const d = document.createElement('div'); d.textContent = s; r
 function esc(s) { return s.replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
 function showToast(msg) {
   const t = $('toast'); t.textContent = msg; t.classList.add('visible');
-  clearTimeout(t._to); t._to = setTimeout(() => t.classList.remove('visible'), 2400);
+  clearTimeout(t._to); t._to = setTimeout(() => t.classList.remove('visible'), 1800);
 }
 </script>
 </body>
