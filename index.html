@@ -219,12 +219,19 @@ async function processImage(imageSrc) {
     // Crop left 50% of image (where names are)
     const cropW = Math.floor(img.width * 0.5);
     const cropH = img.height;
-    const scale = 4;
+    
+    // Scale up but cap at reasonable size for mobile
+    const maxDim = 2000;
+    let scale = 2;
+    if (cropW * scale > maxDim) scale = Math.floor(maxDim / cropW);
+    if (scale < 1) scale = 1;
 
     const canvas = document.createElement('canvas');
     canvas.width = cropW * scale;
     canvas.height = cropH * scale;
     const ctx = canvas.getContext('2d');
+
+    dbg('Crop: ' + cropW + 'x' + cropH + ', scale: ' + scale + ', canvas: ' + canvas.width + 'x' + canvas.height);
 
     // Draw left half scaled up
     ctx.drawImage(img, 0, 0, cropW, cropH, 0, 0, cropW * scale, cropH * scale);
